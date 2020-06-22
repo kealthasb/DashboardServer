@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huixi.project.system.mapper.SysPlatformMapper">
+
+    <resultMap type="SysPlatform" id="SysPlatformResult">
+        <id property="id" column="id"      />
+        <result property="name" column="name" />
+    </resultMap>
+
+    <select id="selectPlatformList" resultMap="SysPlatformResult">
+        select u.id, u.name from t_platform u
+    </select>
+
+    <select id="selectPlatformById" parameterType="Long" resultMap="SysPlatformResult">
+        select u.id, u.name from t_platform u
+        where u.id = #{id}
+    </select>
+
+    <insert id="insertPlatform" parameterType="SysPlatform" useGeneratedKeys="false" keyProperty="id">
+        insert into t_platform(
+        <if test="name != null and name != ''">name</if>
+        )values(
+        <if test="name != null and name != ''">#{name}</if>
+        )
+    </insert>
+
+    <update id="updatePlatform" parameterType="SysPlatform">
+        update t_platform
+        <set>
+            <if test="name != null and name != ''">name = #{name}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePlatformById" parameterType="Long">
+ 		delete from t_platform where id = #{id}
+ 	</delete>
+
+    <delete id="deletePlatformByIds" parameterType="Long">
+        delete from t_platform where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

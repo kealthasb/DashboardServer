@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huixi.project.system.mapper.SysGameMapper">
+
+    <resultMap type="SysGame" id="SysGameResult">
+        <id property="id" column="id"      />
+        <result property="name" column="name" />
+        <result property="appId" column="app_id" />
+        <result property="appSecret" column="app_secret" />
+        <result property="appKey" column="app_key" />
+        <result property="platform" column="platform" />
+        <result property="packageName" column="package_name" />
+    </resultMap>
+
+    <resultMap id="platformResult" type="SysPlatform">
+        <id     property="id"   column="id"     />
+        <result property="name" column="name"   />
+    </resultMap>
+
+    <select id="selectGameList" parameterType="SysGame" resultMap="SysGameResult">
+        select u.id, u.platform, u.name, u.app_id, u.app_secret, u.app_key, u.package_name, p.name as platformName from t_game u
+        left join t_platform p on u.platform = p.id
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+    <select id="selectGameById" parameterType="Long" resultMap="SysGameResult">
+        select u.id, u.platform, u.name, u.app_id, u.app_secret, u.app_key, u.package_name, p.name as platformName from t_game u
+        left join t_platform p on u.platform = p.id
+        where u.id = #{id}
+    </select>
+
+    <select id="selectGameByPlatform" parameterType="Long" resultMap="SysGameResult">
+        select u.id, u.platform, u.name, u.app_id, u.app_secret, u.app_key, u.package_name, p.name as platformName from t_game u
+        left join t_platform p on u.platform = p.id
+        where u.platform = #{platform}
+    </select>
+
+    <insert id="insertGame" parameterType="SysGame" useGeneratedKeys="true" keyProperty="id">
+        insert into t_game(
+        <if test="name != null and name != ''">name,</if>
+        <if test="appId != null and appId != ''">app_id,</if>
+        <if test="platform != null and platform != 0">platform,</if>
+        <if test="appSecret != null and appSecret != ''">app_secret,</if>
+        <if test="appKey != null and appKey != ''">app_key,</if>
+        <if test="packageName != null and packageName != ''">package_name</if>
+        )values(
+        <if test="name != null and name != ''">#{name},</if>
+        <if test="appId != null and appId != ''">#{appId},</if>
+        <if test="platform != null and platform != 0">#{platform},</if>
+        <if test="appSecret != null and appSecret != ''">#{appSecret},</if>
+        <if test="appKey != null and appKey != ''">#{appKey},</if>
+        <if test="packageName != null and packageName != ''">#{packageName}</if>
+        )
+    </insert>
+
+    <update id="updateGame" parameterType="SysGame">
+        update t_game
+        <set>
+            <if test="platform != null and platform != 0">platform = #{platform},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="appId != null and appId != ''">app_id = #{appId},</if>
+            <if test="appSecret != null and appSecret != ''">app_secret = #{appSecret},</if>
+            <if test="appKey != null and appKey != ''">app_key = #{appKey},</if>
+            <if test="packageName != null and packageName != ''">package_name = #{packageName}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteGameById" parameterType="Long">
+ 		delete from t_game where id = #{id}
+ 	</delete>
+
+    <delete id="deleteGameByIds" parameterType="Long">
+        delete from t_game where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
